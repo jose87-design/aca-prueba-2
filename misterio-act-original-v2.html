@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Misterio en Tarazona · Escape Room ACT</title>
+  <meta name="description" content="Aventura urbana gamificada por las calles de Tarazona para descubrir el comercio local." />
+  <style>
+    :root{
+      --bg:#05081a;
+      --panel:rgba(255,255,255,.06);
+      --panel-2:rgba(255,255,255,.08);
+      --line:rgba(255,255,255,.10);
+      --text:#eef2ff;
+      --muted:#a5b0c8;
+      --cyan:#22d3ee;
+      --green:#4ade80;
+      --gold:#f5d16a;
+      --red:#ef4444;
+      --radius:28px;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --max:780px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 15%, rgba(34,211,238,.18), transparent 22%),
+        radial-gradient(circle at 80% 85%, rgba(74,222,128,.16), transparent 24%),
+        linear-gradient(180deg, #020617 0%, #06102a 40%, #030712 100%);
+      min-height:100vh;
+    }
+    .wrap{max-width:var(--max);margin:0 auto;padding:20px 16px 120px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+    }
+    .hero{padding:28px 22px 24px}
+    .hero-top{display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:14px}
+    .logo-lockup{display:flex;align-items:center;gap:16px}
+    .logo-svg{width:96px;height:96px;filter:drop-shadow(0 0 22px rgba(34,211,238,.30))}
+    .logo-word .line1{font-size:14px;letter-spacing:.32em;color:#d0d7e7;font-weight:700}
+    .logo-word .line2{font-size:52px;line-height:.95;font-weight:900;background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px rgba(34,211,238,.18)}
+    .title{font-size:clamp(2rem,4vw,3rem);line-height:1.02;font-weight:900;text-align:center;margin:12px 0 10px}
+    .subtitle{margin:0 auto;max-width:620px;text-align:center;color:var(--muted);line-height:1.6}
+    .chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:18px}
+    .chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:.78rem;color:#dfe8f9}
+    .section{padding:22px}
+    .statbar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+    @media (max-width:720px){.statbar{grid-template-columns:repeat(2,1fr)}.logo-word .line2{font-size:40px}.logo-svg{width:78px;height:78px}}
+    .stat{padding:14px;border-radius:20px;background:var(--panel-2);border:1px solid var(--line)}
+    .stat span{display:block;font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+    .stat b{font-size:1.2rem}
+    h1,h2,h3,p{margin:0}
+    .center{text-align:center}
+    .small{font-size:.85rem;color:var(--muted)}
+    .label{display:block;font-size:.74rem;color:#d9e3f7;text-transform:uppercase;letter-spacing:.12em;margin:0 0 8px}
+    input,button{font:inherit}
+    input{
+      width:100%;padding:16px 18px;border-radius:18px;border:1px solid var(--line);background:#0b1329;color:var(--text);outline:none;
+    }
+    input:focus{border-color:rgba(34,211,238,.55);box-shadow:0 0 0 3px rgba(34,211,238,.14)}
+    button{cursor:pointer;border:0;border-radius:18px;padding:15px 18px;font-weight:800}
+    .btn-main{background:linear-gradient(135deg,var(--cyan),var(--green));color:#06111d}
+    .btn-secondary{background:#0d172f;color:#dce6f8;border:1px solid var(--line)}
+    .btn-ghost{background:transparent;color:#cdd6e7;border:1px dashed var(--line)}
+    .btn-danger{background:rgba(239,68,68,.14);color:#ffd5d5;border:1px solid rgba(239,68,68,.25)}
+    .btn:disabled, button:disabled{opacity:.5;cursor:not-allowed}
+    .stack{display:grid;gap:12px}
+    .station-card{padding:22px;border-radius:26px;background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.025));border:1px solid var(--line)}
+    .station-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:18px}
+    .station-badge{min-width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg, rgba(34,211,238,.18), rgba(74,222,128,.18));border:1px solid var(--line);font-weight:900}
+    .station-title{font-size:1.45rem;font-weight:800;line-height:1.1}
+    .station-copy{margin-top:8px;padding:16px 18px;border-left:3px solid rgba(34,211,238,.65);background:rgba(255,255,255,.025);border-radius:18px;color:#e2e8f4;line-height:1.72;font-style:italic}
+    .feedback{min-height:22px;font-size:.9rem}
+    .ok{color:#7cf7ac}.bad{color:#ff8f8f}
+    .hint{padding:14px 16px;border-radius:18px;background:rgba(34,211,238,.10);border:1px solid rgba(34,211,238,.16);line-height:1.55}
+    .hint.critical{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.18)}
+    .reward{padding:20px;border-radius:24px;background:linear-gradient(180deg, rgba(74,222,128,.12), rgba(34,211,238,.08));border:1px solid var(--line)}
+    .result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .result-box{padding:18px;border-radius:22px;background:var(--panel-2);border:1px solid var(--line)}
+    .result-box .k{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+    .result-box .v{font-size:1.35rem;font-weight:900}
+    .footerbar{position:fixed;left:0;right:0;bottom:0;background:rgba(3,7,18,.88);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:10px 14px}
+    .footerin{max-width:var(--max);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .foot-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .foot-brand svg{width:34px;height:34px;filter:drop-shadow(0 0 10px rgba(34,211,238,.25))}
+    .foot-brand span{font-size:.86rem;color:#d8e1f0;font-weight:700}
+    .foot-brand strong{background:linear-gradient(90deg,var(--cyan),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .footer-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .hidden{display:none !important}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    a.link{color:var(--cyan);text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card hero">
+      <div class="hero-top">
+        <div class="logo-lockup" aria-label="Educando con chIspA">
+          <svg class="logo-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#22d3ee"/>
+                <stop offset="100%" stop-color="#4ade80"/>
+              </linearGradient>
+              <filter id="glow"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <circle cx="120" cy="120" r="82" fill="none" stroke="url(#g1)" stroke-width="16" filter="url(#glow)"/>
+            <circle cx="120" cy="120" r="58" fill="rgba(255,255,255,.02)" stroke="rgba(255,255,255,.08)" stroke-width="2"/>
+            <path d="M120 76 L130 108 L164 120 L130 132 L120 164 L110 132 L76 120 L110 108 Z" fill="url(#g1)" filter="url(#glow)"/>
+            <circle cx="186" cy="92" r="12" fill="#4ade80" filter="url(#glow)"/>
+            <circle cx="82" cy="142" r="8" fill="#22d3ee" filter="url(#glow)"/>
+          </svg>
+          <div class="logo-word">
+            <div class="line1">EDUCANDO CON</div>
+            <div class="line2">chIspA</div>
+          </div>
+        </div>
+      </div>
+      <h1 class="title">Misterio en Tarazona</h1>
+      <p class="subtitle">Escape room urbano para la ACT. Mantiene el guion original de expedientes, pistas y códigos, con registro temporal de inicio y fin y formato HTML único listo para compartir o integrar.</p>
+      <div class="chips">
+        <span class="chip">HTML único</span>
+        <span class="chip">Timestamp inicio/fin</span>
+        <span class="chip">Sin email obligatorio</span>
+        <span class="chip">Guion original respetado</span>
+      </div>
+    </section>
+
+    <section class="card section" id="registerView">
+      <div class="center" style="margin-bottom:18px">
+        <h2>Iniciar infiltración</h2>
+        <p class="small" style="margin-top:6px">Introduce el nombre del equipo. El sistema guardará hora exacta de inicio y fin en este dispositivo.</p>
+      </div>
+      <div class="stack">
+        <div>
+          <label class="label">Unidad de investigación</label>
+          <input id="teamName" placeholder="Nombre del equipo..." />
+        </div>
+        <button class="btn-main" id="startBtn">Iniciar infiltración</button>
+      </div>
+    </section>
+
+    <section class="card section hidden" id="gameView">
+      <div class="statbar">
+        <div class="stat"><span>Tiempo</span><b id="timeSpent">0m</b></div>
+        <div class="stat"><span>Penalización</span><b id="penaltyMinutes">+0m</b></div>
+        <div class="stat"><span>Inicio</span><b id="startStamp">--:--</b></div>
+        <div class="stat"><span>Estación</span><b id="stationProgress">1/3</b></div>
+      </div>
+
+      <div class="station-card">
+        <div class="station-head">
+          <div class="station-badge" id="stationId">01</div>
+          <div>
+            <div class="station-title" id="stationTitle"></div>
+            <p class="small" style="margin-top:6px">Expediente ACT</p>
+          </div>
+        </div>
+
+        <div class="station-copy" id="stationText"></div>
+
+        <div class="stack" style="margin-top:18px">
+          <div>
+            <label class="label">Descifrar</label>
+            <input id="codeInput" class="mono" placeholder="Introduce el código..." />
+          </div>
+          <button class="btn-main" id="validateBtn">Validar coincidencia</button>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      </div>
+
+      <div class="stack" style="margin-top:14px">
+        <button class="btn-secondary" id="hint1Btn">Solicitar informe de inteligencia</button>
+        <div class="hint hidden" id="hint1"></div>
+        <button class="btn-ghost" id="hint2Btn">Revelar fuente directa</button>
+        <div class="hint critical hidden" id="hint2"></div>
+      </div>
+
+      <div class="reward hidden" id="rewardBox" style="margin-top:16px">
+        <h3>Expediente desbloqueado</h3>
+        <p id="bonusText" style="margin-top:8px;line-height:1.65"></p>
+        <button class="btn-main" id="nextBtn" style="margin-top:14px">Siguiente objetivo</button>
+      </div>
+    </section>
+
+    <section class="card section hidden" id="endView">
+      <div class="center">
+        <h2 style="font-size:2.2rem">Caso cerrado</h2>
+        <p class="small" style="margin-top:8px">Registro final de la simulación.</p>
+      </div>
+      <div class="result-grid" style="margin-top:18px">
+        <div class="result-box"><div class="k">Equipo</div><div class="v" id="finalTeam"></div></div>
+        <div class="result-box"><div class="k">Resultado</div><div class="v" id="finalScore"></div></div>
+        <div class="result-box"><div class="k">Hora inicio</div><div class="v" id="finalStart"></div></div>
+        <div class="result-box"><div class="k">Hora fin</div><div class="v" id="finalEnd"></div></div>
+        <div class="result-box"><div class="k">Tiempo de campo</div><div class="v" id="finalElapsed"></div></div>
+        <div class="result-box"><div class="k">Penalización</div><div class="v" id="finalPenalty"></div></div>
+      </div>
+      <div class="stack" style="margin-top:16px">
+        <button class="btn-secondary" id="downloadReportBtn">Descargar informe</button>
+        <button class="btn-danger" id="resetBtn">Reiniciar simulación</button>
+      </div>
+    </section>
+  </div>
+
+  <div class="footerbar">
+    <div class="footerin">
+      <a class="foot-brand" href="https://educandoconchispa.com" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#4ade80"/></linearGradient></defs>
+          <circle cx="120" cy="120" r="82" fill="none" stroke="url(#g2)" stroke-width="16"/>
+          <path d="M120 76 L130 108 L164 120 L130 132 L120 164 L110 132 L76 120 L110 108 Z" fill="url(#g2)"/>
+          <circle cx="186" cy="92" r="12" fill="#4ade80"/>
+          <circle cx="82" cy="142" r="8" fill="#22d3ee"/>
+        </svg>
+        <span>Digitalizado por <strong>Educando con chIspA</strong></span>
+      </a>
+      <div class="footer-actions">
+        <a class="link" href="https://educandoconchispa.com" target="_blank" rel="noopener noreferrer">educandoconchispa.com</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = '';
+    const PENALTY_MINUTES = 3;
+    const STORAGE_KEY = 'tarazona_escape_state_single_v3';
+    const CLUE_COOLDOWN_MS = 60000;
+
+    const STATIONS = [
+      {
+        id: 1,
+        title: 'Expediente #01: El Despertar del Gremio',
+        text: 'El rastro comienza donde la piedra canta y la luz inunda la Girola. El informante dice que el primer código se oculta entre sacos de harina y el aroma a leña recién encendida. Debes buscar el "aliento de la mañana" antes de que el sol alcance el cimborrio.',
+        clue1: 'Un detective hambriento buscaría pan cerca del monumento más grande de Tarazona.',
+        clue2: 'El código de acceso está en la Panadería asociada a la ACT.',
+        code: 'GIROLA24',
+        bonus: 'Evidencia recolectada. Has desbloqueado una ración extra: 10% de descuento en el desayuno.'
+      },
+      {
+        id: 2,
+        title: 'Expediente #02: Sombras en el Octógono',
+        text: 'El Octógono de piedra guarda ecos de ferias pasadas. Hoy, el misterio se traslada al metal. Busca el lugar donde se forjan las herramientas del progreso, donde la industria y el servicio se dan la mano en una esquina histórica.',
+        clue1: 'Busca un comercio de suministros industriales o ferretería cerca de la Plaza Vieja.',
+        clue2: 'La Ferretería de la esquina guarda la clave entre sus estantes.',
+        code: 'OCTOGONO',
+        bonus: 'Pista clave obtenida. Pasa por caja para reclamar tu obsequio de detective (compras >10€).'
+      },
+      {
+        id: 3,
+        title: 'Expediente Final: El Legado de la Atalaya',
+        text: 'Desde la Magdalena, los ojos del pasado nos observan. El hilo de seda nos lleva a las calles gremiales. La última pieza del rompecabezas viste de gala: busca el escaparate que combina la tradición mudéjar con la elegancia del presente.',
+        clue1: 'El estilo tradicional te espera en una boutique del barrio alto.',
+        clue2: 'El código final está en el escaparate de la Boutique [Nombre Ficticio].',
+        code: 'MUDEJAR',
+        bonus: '¡Caso cerrado! Presenta este informe final para tu 15% de descuento en la colección.'
+      }
+    ];
+
+    const $ = (s) => document.querySelector(s);
+    const initialState = {
+      currentStationIndex: 0,
+      startTime: null,
+      endTime: null,
+      penalties: 0,
+      teamName: '',
+      isRegistered: false,
+      cluesUsed: {},
+      clueUnlockTime: {},
+      showBonus: false,
+      isFinished: false
+    };
+    const state = loadState();
+
+    function loadState(){
+      try{ const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : clone(initialState);}catch(e){ return clone(initialState); }
+    }
+    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function clone(v){ return JSON.parse(JSON.stringify(v)); }
+    function normalizeText(text){ return (text||'').trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase(); }
+    function fmtClock(ts){ return ts ? new Date(ts).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '--:--'; }
+    function fmtDateTime(ts){ return ts ? new Date(ts).toLocaleString('es-ES',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '-'; }
+    function elapsedMinutes(){
+      if(!state.startTime) return 0;
+      const endBase = state.endTime || Date.now();
+      return Math.floor((endBase - state.startTime)/60000);
+    }
+    function totalMinutes(){ return elapsedMinutes() + state.penalties; }
+    async function sendResults(){
+      if(!APPS_SCRIPT_URL) return false;
+      const payload = {
+        nombreEquipo: state.teamName,
+        horaInicio: fmtDateTime(state.startTime),
+        horaFin: fmtDateTime(state.endTime),
+        timestampInicio: state.startTime,
+        timestampFin: state.endTime,
+        penalizaciones: state.penalties,
+        tiempoTotalFinal: totalMinutes()
+      };
+      try{
+        await fetch(APPS_SCRIPT_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        return true;
+      }catch(e){ return false; }
+    }
+
+    function render(){
+      const registerView = $('#registerView');
+      const gameView = $('#gameView');
+      const endView = $('#endView');
+
+      if(!state.isRegistered){
+        registerView.classList.remove('hidden');
+        gameView.classList.add('hidden');
+        endView.classList.add('hidden');
+        $('#teamName').value = state.teamName || '';
+        return;
+      }
+
+      if(state.isFinished){
+        registerView.classList.add('hidden');
+        gameView.classList.add('hidden');
+        endView.classList.remove('hidden');
+        $('#finalTeam').textContent = state.teamName;
+        $('#finalScore').textContent = totalMinutes() + ' min';
+        $('#finalStart').textContent = fmtDateTime(state.startTime);
+        $('#finalEnd').textContent = fmtDateTime(state.endTime);
+        $('#finalElapsed').textContent = elapsedMinutes() + ' min';
+        $('#finalPenalty').textContent = '+' + state.penalties + ' min';
+        return;
+      }
+
+      registerView.classList.add('hidden');
+      gameView.classList.remove('hidden');
+      endView.classList.add('hidden');
+
+      const station = STATIONS[state.currentStationIndex];
+      $('#timeSpent').textContent = elapsedMinutes() + 'm';
+      $('#penaltyMinutes').textContent = '+' + state.penalties + 'm';
+      $('#startStamp').textContent = fmtClock(state.startTime);
+      $('#stationProgress').textContent = (state.currentStationIndex+1) + '/' + STATIONS.length;
+      $('#stationId').textContent = String(station.id).padStart(2,'0');
+      $('#stationTitle').textContent = station.title;
+      $('#stationText').textContent = station.text;
+      $('#hint1').textContent = station.clue1;
+      $('#hint2').textContent = station.clue2;
+      $('#bonusText').textContent = station.bonus;
+      $('#feedback').textContent = '';
+      $('#feedback').className = 'feedback';
+      $('#codeInput').value = '';
+      $('#rewardBox').classList.toggle('hidden', !state.showBonus);
+
+      const cluesUsed = state.cluesUsed[station.id] || 0;
+      const waitTime = state.clueUnlockTime[station.id] || 0;
+      const waitSeconds = Math.max(0, Math.ceil((waitTime - Date.now())/1000));
+      $('#hint1').classList.toggle('hidden', cluesUsed < 1);
+      $('#hint2').classList.toggle('hidden', cluesUsed < 2);
+      $('#hint1Btn').disabled = cluesUsed >= 1;
+      $('#hint2Btn').disabled = !(cluesUsed >= 1 && waitSeconds <= 0) || cluesUsed >= 2;
+      $('#hint2Btn').textContent = cluesUsed < 1 ? 'Revelar fuente directa' : (cluesUsed >=2 ? 'Fuente revelada' : (waitSeconds>0 ? `Interceptando señal... ${waitSeconds}s` : 'Revelar fuente directa'));
+    }
+
+    $('#startBtn').addEventListener('click',()=>{
+      const teamName = $('#teamName').value.trim();
+      if(!teamName){ $('#teamName').focus(); return; }
+      Object.assign(state, clone(initialState), {teamName, isRegistered:true, startTime:Date.now()});
+      saveState(); render();
+    });
+
+    $('#validateBtn').addEventListener('click',()=>{
+      const station = STATIONS[state.currentStationIndex];
+      const input = normalizeText($('#codeInput').value);
+      if(!input) return;
+      if(input === normalizeText(station.code)){
+        state.showBonus = true;
+        saveState();
+        render();
+      } else {
+        state.penalties += PENALTY_MINUTES;
+        saveState();
+        $('#feedback').textContent = `Código incorrecto. +${PENALTY_MINUTES} minutos de penalización.`;
+        $('#feedback').className = 'feedback bad';
+        $('#penaltyMinutes').textContent = '+' + state.penalties + 'm';
+      }
+    });
+
+    $('#hint1Btn').addEventListener('click',()=>{
+      const stationId = STATIONS[state.currentStationIndex].id;
+      if((state.cluesUsed[stationId] || 0) >= 1) return;
+      state.cluesUsed[stationId] = 1;
+      state.clueUnlockTime[stationId] = Date.now() + CLUE_COOLDOWN_MS;
+      saveState(); render();
+    });
+
+    $('#hint2Btn').addEventListener('click',()=>{
+      const stationId = STATIONS[state.currentStationIndex].id;
+      const current = state.cluesUsed[stationId] || 0;
+      const unlock = state.clueUnlockTime[stationId] || 0;
+      if(current < 1 || Date.now() < unlock || current >= 2) return;
+      state.cluesUsed[stationId] = 2;
+      saveState(); render();
+    });
+
+    $('#nextBtn').addEventListener('click', async ()=>{
+      state.showBonus = false;
+      if(state.currentStationIndex === STATIONS.length - 1){
+        state.endTime = Date.now();
+        state.isFinished = true;
+        saveState();
+        render();
+        await sendResults();
+      } else {
+        state.currentStationIndex += 1;
+        saveState();
+        render();
+      }
+    });
+
+    $('#downloadReportBtn').addEventListener('click',()=>{
+      const report = {
+        equipo: state.teamName,
+        horaInicio: fmtDateTime(state.startTime),
+        horaFin: fmtDateTime(state.endTime),
+        timestampInicio: state.startTime,
+        timestampFin: state.endTime,
+        tiempoCampoMin: elapsedMinutes(),
+        penalizacionMin: state.penalties,
+        totalMin: totalMinutes()
+      };
+      const blob = new Blob([JSON.stringify(report,null,2)], {type:'application/json;charset=utf-8'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'informe_misterio_tarazona.json';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $('#resetBtn').addEventListener('click',()=>{
+      localStorage.removeItem(STORAGE_KEY);
+      Object.assign(state, clone(initialState));
+      render();
+    });
+
+    setInterval(()=>{ if(state.isRegistered && !state.isFinished) render(); }, 1000);
+    render();
+  </script>
+</body>
+</html>
